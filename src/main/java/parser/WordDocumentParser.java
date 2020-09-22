@@ -27,7 +27,7 @@ public class WordDocumentParser {
 
     private void processDocument() {
         var lines = extractLines();
-        lines = setTitle(lines);
+        lines = setTitleAndUpdateLines(lines);
         doSpeakersWordCount(lines);
     }
 
@@ -70,7 +70,7 @@ public class WordDocumentParser {
         return fromStart;
     }
 
-    private List<String> setTitle(List<String> lines) {
+    private List<String> setTitleAndUpdateLines(List<String> lines) {
         String protocolNumber = null, protocolName = null;
         int i = 0;
         for (; i < Math.min(7, lines.size()) && protocolNumber == null; i++)
