@@ -18,6 +18,7 @@ public class WordDocumentParser {
     private File document;
     private String title;
     private Map<String, Integer> wordCount;
+    private ParsedDocumentData parsedDocumentData;
 
     public WordDocumentParser(File file){
         document = file;
@@ -26,6 +27,8 @@ public class WordDocumentParser {
     }
 
     private void processDocument() {
+        parsedDocumentData = new ParsedDocumentData();
+        parsedDocumentData.setFilename(document.getName());
         var lines = extractLines();
         lines = setTitleAndUpdateLines(lines);
         doSpeakersWordCount(lines);
@@ -47,6 +50,7 @@ public class WordDocumentParser {
                 wordCount.put(speaker, wordCount.get(speaker) + segmentWordCount);
             }
         }
+        parsedDocumentData.setWordCountBySpeaker(wordCount);
     }
 
     private boolean isContinuationOfSpeechSegment(List<String> discussionLines, int i) {
@@ -74,8 +78,10 @@ public class WordDocumentParser {
         String protocolNumber = null, protocolName = null;
         int i = 0;
         for (; i < Math.min(7, lines.size()) && protocolNumber == null; i++)
-            if (lines.get(i).contains("פרוטוקול מס'"))
+            if (lines.get(i).contains("פרוטוקול מס'")) {
                 protocolNumber = lines.get(i);
+                parsedDocumentData.setNumber(nullSafeStringValue(protocolNumber));
+            }
         for (; i < Math.min(15, lines.size()) && protocolName == null; i++) {
             val withoutSpacesOrHyphens = lines.get(i).replaceAll("\\s+", "").replaceAll("-", "");
             if (withoutSpacesOrHyphens.contains("סדרהיום")) {
@@ -88,6 +94,7 @@ public class WordDocumentParser {
                     i++;
                 }
                 protocolName = titleNameBuilder.toString();
+                parsedDocumentData.setTitle(nullSafeStringValue(protocolName));
             }
         }
         title = "\t\tfile name: " + document.getName() + NEW_LINE +

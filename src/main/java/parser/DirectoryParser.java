@@ -8,18 +8,18 @@ import lombok.val;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Data
 public class DirectoryParser {
 
     private Map<String, Map<String, Integer>> speakersWordCount;
+    private List<ParsedDocumentData> parsedDocumentDataList;
 
     public DirectoryParser(Path rootDir) {
         speakersWordCount = new LinkedHashMap<>();
+        parsedDocumentDataList = new ArrayList<>();
         processDir(rootDir.toFile());
     }
 
@@ -31,6 +31,7 @@ public class DirectoryParser {
             System.out.println("parsing document " + entry.getName());
             val docParser = new WordDocumentParser(entry);
             speakersWordCount.put(docParser.getTitle(), docParser.getWordCount());
+            parsedDocumentDataList.add(docParser.getParsedDocumentData());
         }
     }
 
